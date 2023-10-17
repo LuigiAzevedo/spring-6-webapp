@@ -15,10 +15,9 @@ public class BootstrapData implements CommandLineRunner {
     private final BookRepository bookRepository;
     private final PublisherRepository publisherRepository;
 
-    public BootstrapData(
-            AuthorRepository authorRepository,
-            BookRepository bookRepository,
-            PublisherRepository publisherRepository) {
+    public BootstrapData(AuthorRepository authorRepository,
+                         BookRepository bookRepository,
+                         PublisherRepository publisherRepository) {
         this.authorRepository = authorRepository;
         this.bookRepository = bookRepository;
         this.publisherRepository = publisherRepository;
@@ -26,38 +25,44 @@ public class BootstrapData implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Publisher pub1 = new Publisher();
-        pub1.setPublisherName("My Publisher");
-        pub1.setAddress("123 Street");
-        publisherRepository.save(pub1);
-
-        Book ddd = new Book();
-        ddd.setTitle("Domain Driven Design");
-        ddd.setIsbn("123456");
-        ddd.setPublisher(pub1);
-        bookRepository.save(ddd);
-
-        Book noEJB = new Book();
-        noEJB.setTitle("J2EE Development without EJB");
-        noEJB.setIsbn("789456");
-        noEJB.setPublisher(pub1);
-        bookRepository.save(noEJB);
+        Publisher publisher = new Publisher();
+        publisher.setPublisherName("My Publisher");
+        publisher.setAddress("123 Main");
 
         Author eric = new Author();
         eric.setFirstName("Eric");
         eric.setLastName("Evans");
-        eric.getBooks().add(ddd);
-        authorRepository.save(eric);
 
         Author rod = new Author();
         rod.setFirstName("Rod");
         rod.setLastName("Johnson");
+
+        Book ddd = new Book();
+        ddd.setTitle("Domain Driven Design");
+        ddd.setIsbn("123456");
+
+        Book noEJB = new Book();
+        noEJB.setTitle("J2EE Development without EJB");
+        noEJB.setIsbn("54757585");
+
+        eric.getBooks().add(ddd);
         rod.getBooks().add(noEJB);
+
+        ddd.getAuthors().add(eric);
+        noEJB.getAuthors().add(rod);
+
+        ddd.setPublisher(publisher);
+        noEJB.setPublisher(publisher);
+
+        publisherRepository.save(publisher);
+        authorRepository.save(eric);
         authorRepository.save(rod);
+        bookRepository.save(ddd);
+        bookRepository.save(noEJB);
 
         System.out.println("In Bootstrap");
-        System.out.println("Author count: " + authorRepository.count());
-        System.out.println("Book count: " + bookRepository.count());
-        System.out.println("Publisher count: " + publisherRepository.count());
+        System.out.println("Author Count: " + authorRepository.count());
+        System.out.println("Book Count: " + bookRepository.count());
+        System.out.println("Publisher Count: " + publisherRepository.count());
     }
 }
